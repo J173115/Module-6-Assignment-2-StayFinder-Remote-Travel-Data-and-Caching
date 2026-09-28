@@ -78,6 +78,7 @@ export default function BookingScreen() {
       (hotel) =>
         hotel.cityId === selectedCityId
     );
+
 // TODO 8:
 async function loadCityData(isManualRefresh = false) {
   if (isManualRefresh) {
@@ -86,7 +87,7 @@ async function loadCityData(isManualRefresh = false) {
     setIsLoading(true);
   }
 
-  setError(null);
+  setErrorMessage(null);
 
   try {
     const cached = await loadTravelCache(selectedCity.id);
@@ -112,16 +113,15 @@ async function loadCityData(isManualRefresh = false) {
     await saveTravelCache(selectedCity.id, freshData);
   } catch (error) {
     if (weather === null) {
-      setError('Unable to load weather data.');
+      setErrorMessage('Unable to load weather data.');
     } else {
-      setError('Unable to refresh. Using cached data.');
+      setErrorMessage('Unable to refresh. Using cached data.');
     }
   } finally {
     setIsLoading(false);
     setIsRefreshing(false);
   }
 }
-
 useEffect(() => {
   loadCityData();
 }, [selectedCityId]);
