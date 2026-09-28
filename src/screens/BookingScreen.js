@@ -122,8 +122,10 @@ async function loadCityData(isManualRefresh = false) {
   }
 }
 
-  // TODO 9:
-  // Use useEffect() so the flow runs when selectedCityId changes.
+useEffect(() => {
+  loadCityData();
+}, [selectedCityId]);
+
 
   if (
     isLoading &&
