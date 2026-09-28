@@ -8,20 +8,29 @@ export async function saveTravelCache(
   cityId,
   weather
 ) {
-  // TODO 6:
-  // Create an object with:
-  // savedAt: Date.now()
-  // weather: weather
-  //
-  // Save it using AsyncStorage.setItem()
-  // and key `${CACHE_PREFIX}${cityId}`.
+  const cache = {
+    savedAt: Date.now(),
+    weather: weather,
+  };
+
+  await AsyncStorage.setItem(
+    `${CACHE_PREFIX}${cityId}`,
+    JSON.stringify(cache)
+  );
 }
+
 
 export async function loadTravelCache(
   cityId
 ) {
-  // TODO 7:
-  // Read `${CACHE_PREFIX}${cityId}`.
-  // If nothing exists, return null.
-  // Otherwise JSON.parse() and return the object.
+  const value = await AsyncStorage.getItem(
+    `${CACHE_PREFIX}${cityId}`
+  );
+
+  if (value === null) {
+    return null;
+  }
+
+  return JSON.parse(value);
 }
+
