@@ -122,6 +122,7 @@ async function loadCityData(isManualRefresh = false) {
     setIsRefreshing(false);
   }
 }
+
 useEffect(() => {
   loadCityData();
 }, [selectedCityId]);
