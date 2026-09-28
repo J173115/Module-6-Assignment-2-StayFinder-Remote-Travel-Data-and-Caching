@@ -78,29 +78,49 @@ export default function BookingScreen() {
       (hotel) =>
         hotel.cityId === selectedCityId
     );
+// TODO 8:
+async function loadCityData(isManualRefresh = false) {
+  if (isManualRefresh) {
+    setIsRefreshing(true);
+  } else {
+    setIsLoading(true);
+  }
 
-  // TODO 8:
-  // Create async function loadCityData(isManualRefresh = false).
-  //
-  // Required cache-first flow:
-  // 1. If manual refresh, set isRefreshing(true).
-  //    Otherwise set isLoading(true).
-  // 2. Clear old error.
-  // 3. await loadTravelCache(selectedCity.id).
-  // 4. If cache exists:
-  //      setWeather(cached.weather)
-  //      setSourceLabel('Saved cache')
-  //      setLastUpdatedLabel(...) using cached.savedAt
-  //      setIsLoading(false)
-  // 5. Request fresh data from getTravelConditions().
-  // 6. setWeather(freshData)
-  // 7. setSourceLabel('Live API')
-  // 8. update lastUpdatedLabel
-  // 9. await saveTravelCache(selectedCity.id, freshData)
-  // 10. catch:
-  //      if weather is null, show full error
-  //      otherwise show a message that cached data is being used
-  // 11. finally stop loading and refreshing.
+  setError(null);
+
+  try {
+    const cached = await loadTravelCache(selectedCity.id);
+
+    if (cached) {
+      setWeather(cached.weather);
+      setSourceLabel('Saved cache');
+      setLastUpdatedLabel(
+        new Date(cached.savedAt).toLocaleString()
+      );
+      setIsLoading(false);
+    }
+
+    const freshData = await getTravelConditions(
+      selectedCity.latitude,
+      selectedCity.longitude
+    );
+
+    setWeather(freshData);
+    setSourceLabel('Live API');
+    setLastUpdatedLabel(new Date().toLocaleString());
+
+    await saveTravelCache(selectedCity.id, freshData);
+  } catch (error) {
+    if (weather === null) {
+      setError('Unable to load weather data.');
+    } else {
+      setError('Unable to refresh. Using cached data.');
+    }
+  } finally {
+    setIsLoading(false);
+    setIsRefreshing(false);
+  }
+}
 
   // TODO 9:
   // Use useEffect() so the flow runs when selectedCityId changes.
